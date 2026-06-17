@@ -1,1 +1,2 @@
 "# Credit Card Customer Segmentation" 
+I separated this project into a Research Notebook (for EDA and hyperparameter tuning via the Elbow Method) and a Production Pipeline Notebook (which trains the final model and exports the assets for the interactive web app)."
