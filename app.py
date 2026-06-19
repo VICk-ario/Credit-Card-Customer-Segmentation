@@ -52,16 +52,27 @@ st.sidebar.markdown("Adjust the sliders to simulate a new customer and see which
 # Note: In a real app, you would have sliders for all features your model was trained on. 
 # For this example, we assume default median values for features not explicitly adjusted here.
 def get_user_input():
-    # We initialize a dictionary with the median values of ALL columns the model expects
-    # Replace these keys with the exact column names from your original dataframe
     user_data = {col: df[col].median() for col in df.columns if col != 'Cluster'}
     
-    # Let the user adjust the most important ones
+    st.sidebar.markdown("### Financial Metrics")
     user_data['BALANCE'] = st.sidebar.slider("Current Balance ($)", 0.0, 10000.0, 1000.0)
     user_data['PURCHASES'] = st.sidebar.slider("Monthly Purchases ($)", 0.0, 5000.0, 500.0)
     user_data['CASH_ADVANCE'] = st.sidebar.slider("Cash Advances ($)", 0.0, 5000.0, 0.0)
     user_data['CREDIT_LIMIT'] = st.sidebar.slider("Credit Limit ($)", 500.0, 20000.0, 3000.0)
     user_data['PAYMENTS'] = st.sidebar.slider("Payments Made ($)", 0.0, 5000.0, 800.0)
+    
+    st.sidebar.markdown("### Behavioral Metrics")
+    # New Slider 1: How often do they use the card?
+    user_data['PURCHASES_FREQUENCY'] = st.sidebar.slider(
+        "Purchase Frequency (0 = Never, 1 = Every Day)", 
+        0.0, 1.0, 0.5
+    )
+    
+    # New Slider 2: Do they carry debt?
+    user_data['PRC_FULL_PAYMENT'] = st.sidebar.slider(
+        "Full Payment % (0 = Minimums, 1 = Pays in Full)", 
+        0.0, 1.0, 0.0
+    )
     
     return pd.DataFrame([user_data])
 
@@ -104,7 +115,11 @@ with tab2:
     
     # Calculate means for the radar chart
     cluster_means = df.groupby('Cluster').mean().reset_index()
-    features_to_plot = ['BALANCE', 'PURCHASES', 'CASH_ADVANCE', 'CREDIT_LIMIT', 'PAYMENTS']
+    features_to_plot = [
+    'BALANCE', 'PURCHASES', 'CASH_ADVANCE', 
+    'CREDIT_LIMIT', 'PAYMENTS', 
+    'PURCHASES_FREQUENCY', 'PRC_FULL_PAYMENT'
+                 ]
     
     # Build an interactive Plotly Radar Chart
     fig = go.Figure()
